@@ -13,7 +13,7 @@ function App() {
     window.recaptchaVerifier = new RecaptchaVerifier(
       "recaptcha-container",
       {
-        size: "invisible",
+        // size: "invisible",
         callback: (response) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
         },
@@ -25,13 +25,13 @@ function App() {
     e.preventDefault();
 
     if (phoneNumber.length >= 12) {
-      setExpandForm(true);
-
+      console.log(phoneNumber);
       generateRechaptcha();
 
       let appVerifier = window.recaptchaVerifier;
       signInWithPhoneNumber(authentication, phoneNumber, appVerifier)
         .then((confirmationResult) => {
+          setExpandForm(true);
           window.confirmationResult = confirmationResult;
         })
         .catch((error) => {
@@ -39,7 +39,18 @@ function App() {
         });
     }
   };
-  const verifyOTP = (e) => {
+  const verifyOTP = (OTP) => {
+    let confirmationResult = window.confirmationResult;
+    confirmationResult
+      .confirm(OTP)
+      .then((result) => {
+        alert("Phone Number is Verified");
+        setPhoneNumber("");
+        setOTP("");
+      })
+      .catch((err) => console.log(err));
+  };
+  const verifyotp = (e) => {
     let otp = e.target.value;
     setOTP(otp);
     if (otp.length === 6) {
@@ -53,9 +64,9 @@ function App() {
           <h2>Phone Registraion</h2>
           <form onSubmit={requestOTP}>
             <div class="mb-3 mt-3">
-              <label for="phone">Phone Number</label>
+              <label for="phone">Phone Number: </label>&nbsp;
               <input
-                type="number"
+                // type="number"
                 placeholder="Enter phone Number"
                 name="phone"
                 // value={("+91", phoneNumber)}
@@ -71,9 +82,17 @@ function App() {
                     placeholder="Enter OTP here"
                     name="otpInput"
                     value={OTP}
-                    onChange={verifyOTP}
+                    onChange={verifyotp}
                   />
                 </div>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    verifyOTP(OTP);
+                  }}
+                >
+                  Verify OTP
+                </button>
               </>
             ) : null}
             {expandForm === false ? (
