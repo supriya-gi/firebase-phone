@@ -8,7 +8,7 @@ function App() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [expandForm, setExpandForm] = useState(false);
   const [OTP, setOTP] = useState("");
-
+  const [error, setError] = useState(false);
   const generateRechaptcha = () => {
     window.recaptchaVerifier = new RecaptchaVerifier(
       "recaptcha-container",
@@ -41,6 +41,7 @@ function App() {
   };
   const verifyOTP = (OTP) => {
     let confirmationResult = window.confirmationResult;
+    setError(false);
     confirmationResult
       .confirm(OTP)
       .then((result) => {
@@ -48,7 +49,7 @@ function App() {
         setPhoneNumber("");
         setOTP("");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => setError(true));
   };
   const verifyotp = (e) => {
     let otp = e.target.value;
@@ -93,6 +94,9 @@ function App() {
                 >
                   Verify OTP
                 </button>
+                {error && (
+                  <div style={{ color: "red" }}>Invalid OTP Entered</div>
+                )}
               </>
             ) : null}
             {expandForm === false ? (
